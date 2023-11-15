@@ -1,4 +1,6 @@
-﻿using AB12.Application.Products.Results;
+﻿using AB12.Application.Products.Commands;
+using AB12.Application.Products.Results;
+using AB12.Domain.Base.Schema;
 using AB12.Infrastructure.Components;
 using AutoMapper;
 using TanvirArjel.Extensions.Microsoft.DependencyInjection;
@@ -11,7 +13,10 @@ namespace AB12.Services.Components
         private readonly IMapper _mapper;
         private readonly ProductRepo _repo;
 
-        public ProductService(IMapper mapper, ProductRepo repo)
+        public ProductService(
+            IMapper mapper,
+            ProductRepo repo
+            )
         {
             _mapper = mapper;
             _repo = repo;
@@ -26,6 +31,13 @@ namespace AB12.Services.Components
         public async Task<ProductResult> GetByIdAsync(string id)
         {
             var product = await _repo.GetByIdAsync(id);
+            return _mapper.Map<ProductResult>(product);
+        }
+
+        public async Task<ProductResult> CreateAsync(CreateProductCommand command)
+        {
+            var product = _mapper.Map<Product>(command);
+            await _repo.CreateAsync(product);
             return _mapper.Map<ProductResult>(product);
         }
     }

@@ -1,3 +1,4 @@
+using AB12.Application.Products.Commands;
 using AB12.Services.Components;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,8 +27,8 @@ namespace AB12.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting list of products");
-                throw;
+                _logger.LogError("Error getting list of products");
+                throw ex;
             }
         }
 
@@ -36,13 +37,28 @@ namespace AB12.Controllers
         {
             try
             {
-                var result = _service.GetByIdAsync(id);
+                var result = await _service.GetByIdAsync(id);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting product by id");
-                throw;
+                _logger.LogError("Error getting product by id");
+                throw ex;
+            }
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> Create([FromForm] CreateProductCommand command)
+        {
+            try
+            {
+                var result = await _service.CreateAsync(command);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error creating product");
+                throw ex;
             }
         }
     }

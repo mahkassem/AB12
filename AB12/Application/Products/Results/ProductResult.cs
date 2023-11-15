@@ -13,7 +13,8 @@ namespace AB12.Application.Products.Results
         public int Quantity { get; set; }
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<Product, ProductResult>();
+            profile.CreateMap<ProductResult, Product>()
+                .ReverseMap();
         }
     }
 }

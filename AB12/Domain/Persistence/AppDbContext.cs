@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-using AB12.Domain.Base.Common;
+﻿using AB12.Domain.Base.Common;
 using AB12.Domain.Base.Schema;
-using AB12.Domain.Persistence.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace AB12.Domain.Persistence
@@ -13,22 +11,19 @@ namespace AB12.Domain.Persistence
 
         }
 
+        public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderProducts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(ProductConfig)));
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(OrderConfig)));
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(OrderItemConfig)));
+            base.OnModelCreating(builder);
         }
 
         // Audit Trailing
         private void Trail()
         {
-
-
             ChangeTracker.DetectChanges();
 
             // while adding
@@ -51,7 +46,7 @@ namespace AB12.Domain.Persistence
                 .Where(track => track.State == EntityState.Modified)
                 .Select(track => track.Entity)
                 .ToArray();
-            
+
             foreach (var entity in updating)
             {
                 if (entity is AuditableEntity auditableEntity)
@@ -59,6 +54,30 @@ namespace AB12.Domain.Persistence
                     auditableEntity.UpdatedAt = DateTime.UtcNow;
                 }
             }
+        }
+
+        public override int SaveChanges()
+        {
+            Trail();
+            return base.SaveChanges();
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            Trail();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            Trail();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
+        {
+            Trail();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
     }
 }
