@@ -21,7 +21,7 @@ Detailed criteria available [here](PROJECT_RUBRIC.md).
 
 The project follows the Domain-Driven Design (DDD) architecture.
 
-Overview available [here](ARCHITECTURE.md).
+Overview available [here](Architecture.md).
 
 ### Database Schema
 
